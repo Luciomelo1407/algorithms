@@ -22,29 +22,28 @@ void merge(int* vector, int begin, int middle, int end){
     left[i] = vector[begin + i];
   }
   for(int i = 0; i < right_len; i++){
-    right[i] = vector[middle + i + 1 ];
+    right[i] = vector[middle + i + 1];
   }
   int i = 0;
   int j = 0;
   
-  for(int k = begin; k < end; k++){
-    if(j<right_len && i<left_len){
-      if(left[j]<=right[i]){
-        vector[k] = right[i];
-        i++;
-      }else{
-        vector[k] = left[j];
-        j++;
-      }
-    }
-    if(i>=right_len && j<left_len){
-      vector[k] = left[j];
-      j++;
-    }
-    if(j>=left_len && i<right_len){
+  for(int k = begin; k <= end; k++){
+    if(j >= left_len) {
       vector[k] = right[i];
       i++;
     } 
+    else if (i >= right_len) {
+      vector[k] = left[j];
+      j++;
+    }
+    else if (left[j] <= right[i]) {
+      vector[k] = left[j];
+      j++;
+    }
+    else {
+      vector[k] = right[i];
+      i++;
+    }
   }
 }
 
@@ -59,9 +58,9 @@ void mergeSort(int* vector, int begin, int end){
 
 int main(int argc, char *argv[])
 {
-  int vector[3] = {2,7,6};
-  printVec(vector,3);
-  mergeSort(vector,0,2);
-  printVec(vector,3);
+  int vector[15] = {99,58,50,60,65,63,8,9,10,1,5,2,6,1,0};
+  printVec(vector,15);
+  mergeSort(vector,0,14);
+  printVec(vector,15);
   return 0;
 }
