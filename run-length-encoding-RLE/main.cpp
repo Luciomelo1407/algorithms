@@ -5,10 +5,7 @@
 #include <iostream>
 #include <string.h>
 
-int rle(uint8_t *target, uint8_t target_len, uint8_t **compressed) {
-  *compressed = (uint8_t *)malloc(2 * target_len);
-  if (!*compressed)
-    return -1;
+int rle(uint8_t *target, uint8_t target_len, uint8_t *compressed) {
 
   uint8_t caracter = target[0];
   uint8_t counter = 1;
@@ -18,16 +15,16 @@ int rle(uint8_t *target, uint8_t target_len, uint8_t **compressed) {
     if (target[i] == caracter) {
       counter++;
     } else {
-      (*compressed)[cursor++] = counter;
-      (*compressed)[cursor++] = caracter;
+      compressed[cursor++] = counter;
+      compressed[cursor++] = caracter;
       caracter = target[i];
       counter = 1;
     }
   }
 
   // último grupo
-  (*compressed)[cursor++] = counter;
-  (*compressed)[cursor++] = caracter;
+  compressed[cursor++] = counter;
+  compressed[cursor++] = caracter;
 
   return cursor;
 }
@@ -35,9 +32,9 @@ int rle(uint8_t *target, uint8_t target_len, uint8_t **compressed) {
 int main() {
   uint8_t input[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
   int input_len = 9;
-  uint8_t *compressed = NULL;
+  uint8_t compressed[18];
 
-  int compressed_len = rle(input, input_len, &compressed);
+  int compressed_len = rle(input, input_len, compressed);
 
   for (int i = 0; i < compressed_len; i++) {
     printf("%02X ", compressed[i]);
@@ -46,6 +43,4 @@ int main() {
   std::cout << "\n"
             << "compress ratio:"
             << (double)compressed_len * 100 / (double)input_len;
-
-  free(compressed);
 }
