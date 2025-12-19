@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ALPHABET_SIZE 266
-
 typedef struct node {
   int frequency;
   uint8_t symble;
@@ -109,7 +107,9 @@ node *create_tree(int *histogram, int histogram_len) {
     node *y = extract_min(queue);
     insert(queue, x->frequency + y->frequency, 0, x, y);
   }
-  return extract_min(queue);
+  node *root = extract_min(queue);
+  free(queue);
+  return root;
 }
 
 void create_table(node *root, char *table[], char *path, int level) {
