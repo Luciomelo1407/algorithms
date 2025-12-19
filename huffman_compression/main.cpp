@@ -1,7 +1,10 @@
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <stdlib.h>
 #include <string.h>
+
+#define ALPHABET_SIZE 266
 
 typedef struct node {
   int frequency;
@@ -148,33 +151,29 @@ void compactar(char *compressed, uint8_t *input, int input_len, char *table) {
   }
 }
 
-void anexar_bit(uint8_t *output, int *bit_pos, char *codigo_huffman) {
+void anexar_bit(uint8_t *compressed, int *bit_pos, char *codigo_huffman) {
 
   for (int i = 0; codigo_huffman[i] != '\0'; i++) {
 
     if (codigo_huffman[i] == '1') {
 
-      output[*bit_pos / 8] |= (1 << (7 - (*bit_pos % 8)));
+      compressed[*bit_pos / 8] |= (1 << (7 - (*bit_pos % 8)));
     }
 
     (*bit_pos)++;
   }
 }
 
-int huffman_compression(uint8_t *output, uint8_t *input, int input_len,
-                        char *table[]) {
+int huffman_compression_aux(uint8_t *compressed, uint8_t *input, int input_len,
+                            char *table[]) {
   int bit_pos = 0;
   for (int i = 0; i < input_len; i++) {
-    anexar_bit(output, &bit_pos, table[input[i]]);
+    anexar_bit(compressed, &bit_pos, table[input[i]]);
   }
   return bit_pos;
 }
 
-int main(int argc, char *argv[]) {
-  uint8_t input[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-  int input_len = 9;
-  uint8_t output[256] = {0};
-
+int huffman_compression(uint8_t *compressed, uint8_t *input, int input_len) {
   int histogram[256] = {0};
   histogram_calc(histogram, input, input_len);
 
@@ -184,15 +183,28 @@ int main(int argc, char *argv[]) {
   char path[256];
   create_table(huffman_tree, table, path, 0);
 
-  int bit_pos = huffman_compression(output, input, input_len, table);
+  int bit_pos = huffman_compression_aux(compressed, input, input_len, table);
 
-  int output_size = (bit_pos + 7) / 8;
-
-  for (int i = 0; i < output_size; i++) {
-    printf("%02X", output[i]);
-  }
-
+  int compressed_size = (bit_pos + 7) / 8;
   delete_tree(huffman_tree);
+  for (int i = 0; i < 256; i++) {
+    if (table[i]) {
+      free(table[i]);
+    }
+  }
+  return compressed_size;
+}
+
+int main(int argc, char *argv[]) {
+  uint8_t input[] = {0xFF, 0xFF, 0xFA, 0xFE, 0xEE, 0xAA, 0xFF, 0xFF, 0xFF};
+  int input_len = 9;
+  uint8_t compressed[18] = {0};
+
+  int compressed_size = huffman_compression(compressed, input, input_len);
+
+  for (int i = 0; i < compressed_size; i++) {
+    printf("%02X", compressed[i]);
+  }
 
   return 0;
 }
