@@ -1,0 +1,1 @@
+Os aquivos rle.output e gabarito.output são idênticos
