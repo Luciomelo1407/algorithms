@@ -44,7 +44,7 @@ void writeVecInFile(FILE *out, uint8_t *input, int input_len) {
   fprintf(out, "\n");
 }
 
-void writeLabel(FILE *out, int pos, float compressRatio) {
+void writeRLELabel(FILE *out, int pos, float compressRatio) {
   fprintf(out, "%d->RLE(%0.2f%%)=", pos, compressRatio);
 }
 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 
     compressRatio = (float)rleOutputLen * 100.0 / (float)input_len;
 
-    writeLabel(file_out, i, compressRatio);
+    writeRLELabel(file_out, i, compressRatio);
     writeVecInFile(file_out, rleOutput, rleOutputLen);
   }
 
